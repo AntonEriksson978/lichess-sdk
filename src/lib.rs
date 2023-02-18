@@ -1,4 +1,5 @@
 pub mod account;
+pub mod users;
 
 use dotenv::dotenv;
 use reqwest::header;
