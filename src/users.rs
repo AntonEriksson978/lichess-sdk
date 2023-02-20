@@ -1,16 +1,15 @@
 pub mod models;
-use std::vec;
 
-use crate::LichessClient;
+use crate::{users::models::User, LichessClient};
 
-use self::models::Status;
+use self::models::UserStatus;
 
 impl LichessClient {
-    pub async fn get_status(
+    pub async fn get_realtime_users_status(
         &self,
         user_ids: Vec<&str>,
         with_game_ids: bool,
-    ) -> Result<Vec<Status>, reqwest::Error> {
+    ) -> Result<Vec<UserStatus>, reqwest::Error> {
         let url = "https://lichess.org/api/users/status";
         let response = self
             .client
@@ -24,7 +23,15 @@ impl LichessClient {
             .text()
             .await?;
 
-        let status: Vec<Status> = serde_json::from_str(&response).expect("correct json");
+        let status: Vec<UserStatus> = serde_json::from_str(&response).expect("correct json");
         Ok(status)
+    }
+
+    pub async fn get_user_public_data(&self, username: &str) -> Result<User, reqwest::Error> {
+        let url = format!("https://lichess.org/api/user/{}", username);
+
+        let response = self.client.get(url).send().await?.text().await?;
+        let user: User = serde_json::from_str(&response).expect("json");
+        Ok(user)
     }
 }

@@ -1,14 +1,14 @@
 pub mod models;
 
-use self::models::Account;
 use self::models::UserPreferences;
+use crate::users::models::User;
 use crate::LichessClient;
 
 impl LichessClient {
-    pub async fn get_account(&self) -> Result<Account, reqwest::Error> {
+    pub async fn get_account(&self) -> Result<User, reqwest::Error> {
         let url = "https://lichess.org/api/account";
         let response = self.client.get(url).send().await?.text().await?;
-        let account: Account = serde_json::from_str(&response)
+        let account: User = serde_json::from_str(&response)
             .expect("a json object that corresponds with User struct");
         Ok(account)
     }
